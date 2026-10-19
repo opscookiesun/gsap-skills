@@ -1,0 +1,184 @@
+/* ==========================================================================
+   ТОЛЬКО ДЛЯ ПРЕДПРОСМОТРА.
+   Мини-аналог bootstrap-сетки + «фирменный цвет» ФЕНИКС, чтобы статичная
+   копия разметки вела себя как живая страница. В сам Битрикс НЕ загружать:
+   там эти классы уже есть.
+   ========================================================================== */
+
+*{ box-sizing: border-box; }
+
+html, body{
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  color: #14181d;
+  font: 15px/1.55 "Inter","Segoe UI","Helvetica Neue",Arial,sans-serif;
+}
+
+.container{
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.row{
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.row.no-gutters{ margin-left: 0; margin-right: 0; }
+.row.no-gutters > [class*="col-"]{ padding-left: 0; padding-right: 0; }
+.row.no-margin{ margin-left: 0; margin-right: 0; }
+
+[class*="col-"]{
+  position: relative;
+  width: 100%;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.col-2{ flex: 0 0 16.666667%; max-width: 16.666667%; }
+.col-6{ flex: 0 0 50%; max-width: 50%; }
+.col-10{ flex: 0 0 83.333333%; max-width: 83.333333%; }
+.col-12{ flex: 0 0 100%; max-width: 100%; }
+
+@media (min-width: 576px){
+  .col-sm-6{ flex: 0 0 50%; max-width: 50%; }
+}
+@media (min-width: 768px){
+  .col-md-3{ flex: 0 0 25%; max-width: 25%; }
+  .col-md-4{ flex: 0 0 33.333333%; max-width: 33.333333%; }
+}
+@media (min-width: 1200px){
+  .col-xl-3{ flex: 0 0 25%; max-width: 25%; }
+  .col-xl-4{ flex: 0 0 33.333333%; max-width: 33.333333%; }
+  .col-xl-5{ flex: 0 0 41.666667%; max-width: 41.666667%; }
+  .col-xl-7{ flex: 0 0 58.333333%; max-width: 58.333333%; }
+}
+
+.d-block{ display: block; }
+.d-flex{ display: flex; }
+.align-items-center{ align-items: center; }
+.justify-content-between{ justify-content: space-between; }
+.mx-auto{ margin-left: auto; margin-right: auto; }
+.img-fluid{ max-width: 100%; height: auto; }
+.text-center{ text-align: center; }
+.italic{ font-style: italic; }
+.bold{ font-weight: 700; }
+.hidden{ display: none !important; }
+
+/* фирменный цвет шаблона — в предпросмотре задаём вручную */
+.main-color{ background-color: #c2572f; color: #fff; }
+
+/* «хлебные крошки» и H1 страницы (в предпросмотре — упрощённо) */
+.pv-top{
+  padding: 26px 0 10px;
+  font-size: 12.5px;
+  color: #6b7480;
+}
+.pv-top a{ color: #6b7480; text-decoration: none; }
+.pv-top a:hover{ color: #14181d; }
+.pv-h1{
+  margin: 6px 0 26px;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.18;
+  font-weight: 600;
+  letter-spacing: -.015em;
+  max-width: 22ch;
+}
+.pv-note{
+  margin: 0 0 30px;
+  padding: 12px 16px;
+  border: 1px dashed #ccd1d7;
+  border-radius: 3px;
+  background: #f7f7f5;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #2b323b;
+}
+.pv-note b{ font-weight: 600; }
+
+/* отступы между блоками карточки, как на странице ФЕНИКС */
+.cart-block{ margin: 0 0 56px; }
+#main.cart-info-block{ margin-bottom: 56px; }
+
+/* иконки «отложить / сравнить»: в ФЕНИКС это спрайт, здесь — символы */
+#main .wrapper-delay-compare-icons{
+  margin-top: 14px;
+  display: flex;
+  gap: 10px;
+}
+#main .wrapper-delay-compare-icons .icon{
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #2b323b;
+  cursor: pointer;
+}
+#main .wrapper-delay-compare-icons .icon.delay::after{ content: "\2661"; }
+#main .wrapper-delay-compare-icons .icon.compare::after{ content: "\21C4"; }
+
+/* сетка карточек в «похожих» и «сопутствующих» */
+.pv-grid{ margin-left: -10px; margin-right: -10px; }
+.pv-grid > [class*="col-"]{ padding-left: 10px; padding-right: 10px; margin-bottom: 20px; }
+
+.item-inner{ display: flex; flex-direction: column; height: 100%; }
+.item-inner .wrapper-image{
+  height: 190px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.item-inner .wrapper-image img{
+  max-height: 190px;
+  width: auto;
+  object-fit: contain;
+}
+.item-inner .wrapper-bot{ margin-top: auto; padding-top: 12px; }
+.item-inner .board-price{ margin-top: 8px; }
+.item-inner .add2basket{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  margin-top: 10px;
+  text-decoration: none;
+  color: #fff;
+}
+.item-inner .name-element{
+  display: block;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #14181d;
+  text-decoration: none;
+  min-height: 40px;
+}
+
+/* новости */
+.pv-news a{
+  display: block;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #14181d;
+  text-decoration: none;
+  border: 1px solid #e3e6ea;
+  border-radius: 3px;
+  padding: 18px;
+  height: 100%;
+}
+.pv-news a:hover{ border-color: #14181d; }
+.pv-news .label{
+  display: block;
+  font-size: 11px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #6b7480;
+  margin-bottom: 8px;
+}
+
+/* описание под галереей */
+#main .wrapper-description.under-pic-pos{ margin: 20px 0 0 !important; }

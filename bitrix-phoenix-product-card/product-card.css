@@ -1,0 +1,1109 @@
+/* ==========================================================================
+   ITALICA — карточка товара
+   1С-Битрикс, готовое решение ФЕНИКС (concept.phoenix), шаблон
+   bitrix:catalog.element -> main.  Верстка НЕ меняется: только CSS.
+
+   Концепция: «Цех» — технический каталог. Мелкая типографика с трекингом,
+   тонкие (hairline) линейки, нумерация секций, табличные цифры, плотный
+   покупательский блок. Без градиентов, без «воздушных» ИИ-шаблонов.
+
+   Куда вставлять: админка ФЕНИКС -> Настройки -> шаблон -> поле «Свой CSS»
+   (не затрагивается обновлениями решения). После вставки — сбросить кэш.
+
+   Селекторы привязаны к родным классам/id ФЕНИКС:
+   #main, .cart-info-block, .catalog-item, .info-left-side, .info-right-side,
+   .info-right-side-inner, .wrapper-picture, .wrapper-controls,
+   .controls-pictures, .small-picture, .outer-big-picture,
+   .wrapper-big-picture, .big-picture, .wrapper-board-label, .mini-board,
+   .wrapper-article-available, .detail-article, .detail-available,
+   .wrapper-price (#actual_price), .board-price, .actual-price, .price-value,
+   .old-price, .wrapper-discount, .actual-discount, .cheaper,
+   .wrapper-quantity, .quantity-container, .product-item-amount-field,
+   .wrapper-btns, .add2basket, .move2basket, .fast-order, .wr-preorder,
+   .comment-detail-catalog, .cart-block, .cart-title, .cart-char-table,
+   .show-hidden, .files-list, .item-inner, .name-element.
+   ========================================================================== */
+
+
+/* ==========================================================================
+   1. ТОКЕНЫ
+   ========================================================================== */
+:root{
+  --ital-ink:            #14181d;   /* основной текст */
+  --ital-ink-2:          #2b323b;   /* второстепенный текст */
+  --ital-muted:          #6b7480;   /* подписи, сноски */
+  --ital-line:           #e3e6ea;   /* hairline */
+  --ital-line-2:         #ccd1d7;   /* hairline активный */
+  --ital-paper:          #ffffff;
+  --ital-paper-2:        #f7f7f5;   /* тёплая бумага, для «зебры» и ховеров */
+
+  /* акцент по умолчанию; product-card.js подменяет его на фирменный цвет
+     сайта (берётся у кнопки «В корзину»), поэтому править вручную не нужно */
+  --ital-accent:         #b06a2c;
+  --ital-accent-soft:    rgba(176,106,44,.10);
+
+  --ital-ok:             #2f7d52;
+  --ital-warn:           #a8761b;
+  --ital-bad:            #b0402f;
+
+  --ital-r:              3px;       /* радиус: почти прямой угол */
+  --ital-font:           "Inter","IBM Plex Sans","Segoe UI","Helvetica Neue",Arial,"Noto Sans",system-ui,-apple-system,sans-serif;
+  --ital-ease:           cubic-bezier(.22,.61,.36,1);
+  --ital-shadow:         0 1px 2px rgba(20,24,29,.04), 0 12px 30px -24px rgba(20,24,29,.45);
+}
+
+
+/* ==========================================================================
+   2. БАЗА КАРТОЧКИ
+   ========================================================================== */
+body{ counter-reset: ital-sec; }
+
+#main .catalog-item,
+#chars, #similar, #accessory, #news_list{
+  font-family: var(--ital-font) !important;
+  color: var(--ital-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#main .catalog-item{
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* сетка: убираем дефолтные «пружины» ФЕНИКС, остальное делает bootstrap */
+#main .info-left-side{ padding-right: 24px; }
+#main .info-right-side{ padding-left: 24px; padding-right: 0; }
+#main .info-right-side .info-right-side-inner{ padding-left: 0 !important; }
+
+/* цифры везде — табличные, чтобы цена не «дрожала» при пересчёте */
+#main .price-value,
+#main .total-value,
+#main .actual-econom,
+#main .actual-discount,
+#main .product-item-amount-field,
+#main .detail-article{ font-variant-numeric: tabular-nums lining-nums; }
+
+
+/* ==========================================================================
+   3. ЗАГОЛОВКИ СЕКЦИЙ (единые для всех блоков карточки)
+   ========================================================================== */
+.cart-block{ counter-increment: ital-sec; }
+
+.cart-block > .cart-title{
+  display: flex !important;
+  align-items: center;
+  gap: 20px;
+  margin: 0 0 26px !important;
+  padding: 0 !important;
+}
+
+.cart-block > .cart-title .title{
+  position: relative;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: clamp(20px, 2.1vw, 27px);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--ital-ink);
+}
+
+/* номер секции: 01, 02, 03 — editorial-акцент без правки HTML */
+.cart-block > .cart-title .title::before{
+  content: counter(ital-sec, decimal-leading-zero);
+  display: inline-block;
+  margin-right: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .16em;
+  color: var(--ital-accent);
+  vertical-align: .45em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* линия, уходящая в никуда */
+.cart-block > .cart-title .line{
+  flex: 1 1 auto;
+  min-width: 30px;
+  height: 1px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 1 !important;
+  background: linear-gradient(90deg, var(--ital-line-2) 0%, rgba(204,209,215,0) 100%) !important;
+}
+
+
+/* ==========================================================================
+   4. ГАЛЕРЕЯ
+   ========================================================================== */
+#main .info-left-side .wrapper-picture{
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  align-items: flex-start;
+}
+
+/* --- превью-полоса слева --- */
+#main .info-left-side .wrapper-controls{ padding-right: 14px; }
+
+#main .info-left-side .controls-pictures{
+  display: flex !important;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+#main .info-left-side .small-picture{
+  position: relative;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1;
+  max-width: none !important;
+  padding: 6px;
+  border: 1px solid var(--ital-line);
+  border-radius: var(--ital-r);
+  background: var(--ital-paper);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .18s var(--ital-ease),
+              box-shadow .18s var(--ital-ease),
+              transform .18s var(--ital-ease);
+}
+#main .info-left-side .small-picture img{
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: contain;
+}
+#main .info-left-side .small-picture:hover{
+  border-color: var(--ital-line-2);
+  transform: translateY(-1px);
+}
+#main .info-left-side .small-picture.active{
+  border-color: var(--ital-ink);
+  box-shadow: inset 0 0 0 1px var(--ital-ink);
+}
+
+/* «Ещё 5» */
+#main .info-left-side .more{
+  margin-top: 2px;
+  text-align: center;
+  width: 100%;
+}
+#main .info-left-side .more a{
+  display: inline-block;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ital-muted);
+  border-bottom: 1px dashed var(--ital-line-2);
+  padding-bottom: 2px;
+  text-decoration: none !important;
+}
+#main .info-left-side .more a:hover{
+  color: var(--ital-ink);
+  border-bottom-color: var(--ital-ink);
+}
+
+/* --- большое фото --- */
+#main .info-left-side .outer-big-picture{
+  position: relative;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+#main .info-left-side .wrapper-big-picture{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 340px;
+  padding: 18px;
+  background: var(--ital-paper);
+  border: 1px solid var(--ital-line);
+  border-radius: var(--ital-r);
+  transition: box-shadow .25s var(--ital-ease), border-color .25s var(--ital-ease);
+}
+#main .info-left-side .wrapper-big-picture:hover{
+  border-color: var(--ital-line-2);
+  box-shadow: var(--ital-shadow);
+}
+
+#main .info-left-side .big-picture{ display: none !important; width: 100%; }
+#main .info-left-side .big-picture.active{ display: block !important; }
+
+#main .info-left-side .big-picture img{
+  width: auto;
+  max-width: 100%;
+  max-height: min(62vh, 560px);
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+/* счётчик «03 / 08» (подставляет product-card.js) */
+#main .info-left-side .wrapper-picture.ital-counter .wrapper-big-picture::after{
+  content: var(--ital-counter);
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  padding: 4px 7px;
+  border-radius: 2px;
+  background: rgba(255,255,255,.92);
+  font: 600 11px/1 var(--ital-font);
+  letter-spacing: .14em;
+  color: var(--ital-muted);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* метки на фото (Хит / Новинка / Акция) */
+#main .info-left-side .wrapper-board-label{
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+#main .info-left-side .wrapper-board-label br{ display: none; }
+#main .info-left-side .mini-board{
+  display: inline-block;
+  padding: 4px 9px !important;
+  border: 1px solid var(--ital-line-2);
+  border-radius: 2px;
+  background: var(--ital-paper) !important;
+  color: var(--ital-ink) !important;
+  font: 600 10.5px/1.2 var(--ital-font) !important;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+#main .info-left-side .mini-board.hit,
+#main .info-left-side .mini-board.hit-sale,
+#main .info-left-side .mini-board.top{
+  background: var(--ital-accent) !important;
+  border-color: transparent;
+  color: #fff !important;
+}
+#main .info-left-side .mini-board.new,
+#main .info-left-side .mini-board.newproduct{
+  background: var(--ital-ink) !important;
+  border-color: transparent;
+  color: #fff !important;
+}
+#main .info-left-side .mini-board.sale,
+#main .info-left-side .mini-board.action,
+#main .info-left-side .mini-board.discount{
+  background: var(--ital-bad) !important;
+  border-color: transparent;
+  color: #fff !important;
+}
+
+/* отложить / сравнить */
+#main .info-left-side .wrapper-delay-compare-icons{
+  opacity: .55;
+  transition: opacity .2s var(--ital-ease);
+}
+#main .info-left-side .wrapper-delay-compare-icons:hover{ opacity: 1; }
+#main .info-left-side .wrapper-delay-compare-icons .icon{
+  border: 1px solid var(--ital-line);
+  border-radius: 50%;
+  background-color: var(--ital-paper) !important;
+  transition: border-color .18s var(--ital-ease), transform .18s var(--ital-ease);
+}
+#main .info-left-side .wrapper-delay-compare-icons .icon:hover{
+  border-color: var(--ital-ink);
+  transform: translateY(-1px);
+}
+
+
+/* ==========================================================================
+   5. ПРАВАЯ КОЛОНКА — панель покупки
+   ========================================================================== */
+#main .info-right-side .info-right-side-inner{
+  background: var(--ital-paper);
+  border: 1px solid var(--ital-line);
+  border-radius: var(--ital-r);
+  box-shadow: var(--ital-shadow);
+  padding: 24px 26px 28px !important;
+}
+
+/* липкая панель на десктопе (класс ставит JS, только если панель
+   целиком влезает в экран — иначе sticky выключается) */
+@media (min-width: 1200px){
+  #main .info-right-side .info-right-side-inner.ital-sticky{
+    position: sticky;
+    top: 24px;
+  }
+}
+
+/* --- артикул и наличие --- */
+#main .wrapper-article-available{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px;
+  margin: 0 0 16px !important;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--ital-line);
+}
+#main .detail-article{
+  font-style: normal !important;
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ital-muted);
+}
+#main .detail-available{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--ital-ink-2) !important;
+}
+#main .detail-available .text{ font-size: 12.5px; }
+#main .detail-available .quantity{ font-weight: 600; }
+#main .detail-available::before{
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: var(--ital-muted);
+  box-shadow: 0 0 0 3px rgba(107,116,128,.12);
+}
+#main .detail-available.ital-ok::before{
+  background: var(--ital-ok);
+  box-shadow: 0 0 0 3px rgba(47,125,82,.14);
+}
+#main .detail-available.ital-warn::before{
+  background: var(--ital-warn);
+  box-shadow: 0 0 0 3px rgba(168,118,27,.16);
+}
+#main .detail-available.ital-bad::before{
+  background: var(--ital-bad);
+  box-shadow: 0 0 0 3px rgba(176,64,47,.14);
+}
+
+/* --- описание в правой колонке --- */
+#main .wrapper-description.right-pos{ margin: 0 0 18px !important; }
+#main .detail-description{
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ital-ink-2);
+}
+#main .detail-description p{ margin-bottom: 10px; }
+#main .detail-description p:last-child{ margin-bottom: 0; }
+#main .wrapper-description .info-style{
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ital-muted);
+  text-decoration: none !important;
+}
+#main .wrapper-description .info-style .bord-bot{
+  border-bottom: 1px dashed var(--ital-line-2) !important;
+  transition: border-color .18s var(--ital-ease), color .18s var(--ital-ease);
+}
+#main .wrapper-description .info-style:hover{ color: var(--ital-ink); }
+#main .wrapper-description .info-style:hover .bord-bot{ border-bottom-color: var(--ital-ink) !important; }
+
+
+/* ==========================================================================
+   6. ЦЕНА
+   ========================================================================== */
+#main .wrapper-price{
+  position: relative;
+  padding: 4px 0 14px;
+}
+#main .wrapper-price > .desc-title{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px !important;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ital-muted);
+}
+#main .wrapper-price > .desc-title::before{
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 6px;
+  background: var(--ital-accent);
+  border-radius: 1px;
+}
+#main .board-price{
+  display: flex !important;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 0 !important;
+}
+#main .actual-price{
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+#main .price-value{
+  font-size: clamp(30px, 3.2vw, 40px) !important;
+  line-height: 1 !important;
+  font-weight: 600;
+  letter-spacing: -.02em;
+  color: var(--ital-ink);
+}
+#main .unit{
+  font-size: 13px;
+  color: var(--ital-muted);
+}
+#main .old-price{
+  font-size: 16px;
+  color: var(--ital-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+/* экономия / скидка / «нашли дешевле?» */
+#main .wrapper-discount-cheaper{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px;
+  margin-top: 12px !important;
+}
+#main .wrapper-discount{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px !important;
+}
+#main .desc-discount{
+  font-size: 12px;
+  color: var(--ital-muted);
+  background: none !important;
+  padding: 0 !important;
+}
+#main .actual-econom{
+  font-size: 13px;
+  font-weight: 600 !important;
+  color: var(--ital-ink);
+  background: none !important;
+  padding: 0 !important;
+}
+#main .actual-discount{
+  display: inline-block;
+  padding: 3px 8px !important;
+  border-radius: 2px;
+  background: var(--ital-accent-soft) !important;
+  color: var(--ital-accent) !important;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+#main .cheaper a{
+  font-size: 12.5px;
+  color: var(--ital-muted);
+  text-decoration: none !important;
+}
+#main .cheaper a:hover{ color: var(--ital-ink); }
+#main .cheaper .bord-bot{
+  border-bottom: 1px dashed var(--ital-line-2) !important;
+  transition: border-color .18s var(--ital-ease);
+}
+#main .cheaper a:hover .bord-bot{ border-bottom-color: var(--ital-ink) !important; }
+
+
+/* ==========================================================================
+   7. ТОРГОВЫЕ ПРЕДЛОЖЕНИЯ (SKU)
+   ========================================================================== */
+#main .wrapper-skudiv{ margin: 14px 0 0; }
+#main .wrapper-sku-props{ margin-bottom: 16px; }
+#main .wrapper-sku-props .wrapper-title{ margin-bottom: 8px; }
+#main .wrapper-sku-props .desc-title{
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ital-muted);
+}
+#main .sku-props{ margin: 0 !important; }
+#main .sku-props li{ cursor: pointer; }
+#main .sku-props li.detail-text{
+  border: 1px solid var(--ital-line-2) !important;
+  border-radius: var(--ital-r);
+  background: var(--ital-paper) !important;
+  padding: 7px 13px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--ital-ink-2);
+  transition: border-color .18s var(--ital-ease), color .18s var(--ital-ease), transform .18s var(--ital-ease);
+}
+#main .sku-props li.detail-text:hover{
+  border-color: var(--ital-ink) !important;
+  color: var(--ital-ink);
+  transform: translateY(-1px);
+}
+#main .sku-props li.detail-text.active{
+  border-color: var(--ital-ink) !important;
+  background: var(--ital-ink) !important;
+  color: #fff !important;
+}
+#main .sku-props li.detail-color .color{
+  border: 1px solid var(--ital-line-2);
+  border-radius: var(--ital-r);
+  overflow: hidden;
+  transition: transform .18s var(--ital-ease), box-shadow .18s var(--ital-ease);
+}
+#main .sku-props li.detail-color:hover .color{ transform: translateY(-1px); }
+#main .sku-props li.detail-color.active .color,
+#main .sku-props li.detail-color.selected .color{
+  box-shadow: 0 0 0 1px var(--ital-paper), 0 0 0 2px var(--ital-ink);
+}
+
+
+/* ==========================================================================
+   8. КОЛИЧЕСТВО
+   ========================================================================== */
+#main .wrapper-quantity{
+  margin: 18px 0 0 !important;
+  padding-top: 18px !important;
+  border-top: 1px solid var(--ital-line);
+}
+#main .wrapper-quantity .wrapper-title{ margin-bottom: 10px !important; }
+#main .wrapper-quantity .desc-title{
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ital-muted);
+}
+#main .wrapper-quantity-total{ align-items: center; }
+
+#main .quantity-container{
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 150px;
+  max-width: 100%;
+  height: 46px;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 1px solid var(--ital-line-2);
+  border-radius: var(--ital-r);
+  background: var(--ital-paper);
+  overflow: hidden;
+}
+#main .quantity-container span{
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--ital-ink-2);
+  cursor: pointer;
+  user-select: none;
+  transition: background .15s var(--ital-ease), color .15s var(--ital-ease);
+}
+#main .quantity-container span:hover{
+  background: var(--ital-paper-2);
+  color: var(--ital-ink);
+}
+#main .quantity-container input.product-item-amount-field{
+  width: 58px !important;
+  height: 44px;
+  min-width: 0 !important;
+  margin: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-left: 1px solid var(--ital-line) !important;
+  border-right: 1px solid var(--ital-line) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  text-align: center;
+  font: 600 15px/1 var(--ital-font);
+  color: var(--ital-ink);
+  -moz-appearance: textfield;
+}
+#main .quantity-container input.product-item-amount-field::-webkit-outer-spin-button,
+#main .quantity-container input.product-item-amount-field::-webkit-inner-spin-button{
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#main .total-container{
+  text-align: right;
+  font-size: 13px;
+  color: var(--ital-muted);
+  white-space: nowrap;
+}
+#main .total-container .desc-total{ margin-right: 4px; }
+#main .total-container .total-value{
+  font-size: 17px;
+  color: var(--ital-ink);
+}
+
+
+/* ==========================================================================
+   9. КНОПКИ
+   ========================================================================== */
+#main .wrapper-btns{
+  margin: 18px -5px 0 !important;
+  align-items: stretch;
+}
+#main .wrapper-btns > .left-btn,
+#main .wrapper-btns > .right-btn{
+  padding-left: 5px !important;
+  padding-right: 5px !important;
+}
+
+#main .wrapper-btns a{
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 16px;
+  border-radius: var(--ital-r) !important;
+  font: 600 14px/1.1 var(--ital-font) !important;
+  letter-spacing: .01em;
+  text-align: center;
+  text-decoration: none !important;
+  transition: transform .18s var(--ital-ease),
+              box-shadow .18s var(--ital-ease),
+              background-color .18s var(--ital-ease),
+              border-color .18s var(--ital-ease),
+              color .18s var(--ital-ease);
+}
+
+/* «В корзину» — остаётся в фирменном цвете шаблона (.main-color),
+   меняется только геометрия, типографика и отклик на наведение */
+#main .left-btn .add2basket{
+  border: 1px solid transparent !important;
+  box-shadow: 0 1px 2px rgba(20,24,29,.08);
+}
+#main .left-btn .add2basket:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -12px rgba(20,24,29,.65);
+}
+#main .left-btn .add2basket:active{ transform: translateY(0); }
+
+/* «Уже в корзине» */
+#main .left-btn .move2basket{
+  background: var(--ital-paper) !important;
+  border: 1px solid var(--ital-ok) !important;
+  color: var(--ital-ok) !important;
+}
+#main .left-btn .move2basket:hover{
+  background: rgba(47,125,82,.06) !important;
+  transform: translateY(-1px);
+}
+
+/* «Заказ в 1 клик» */
+#main .right-btn .fast-order{
+  background: transparent !important;
+  border: 1px solid var(--ital-line-2) !important;
+  color: var(--ital-ink) !important;
+}
+#main .right-btn .fast-order:hover{
+  border-color: var(--ital-ink) !important;
+  background: var(--ital-paper-2) !important;
+  transform: translateY(-1px);
+}
+
+/* «Под заказ», «Узнать о поступлении» и прочие текстовые кнопки */
+#main .wr-preorder{ margin-top: 12px; }
+#main .wr-preorder .btn-transpatent,
+#main .info-right-side-inner .btn-transpatent{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  width: auto !important;
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  color: var(--ital-muted) !important;
+  font: 500 13px/1 var(--ital-font) !important;
+  text-decoration: none !important;
+}
+#main .wr-preorder .btn-transpatent .icon-load,
+#main .info-right-side-inner .btn-transpatent span{
+  border-bottom: 1px dashed var(--ital-line-2);
+  padding-bottom: 2px;
+  transition: color .18s var(--ital-ease), border-color .18s var(--ital-ease);
+}
+#main .wr-preorder .btn-transpatent:hover,
+#main .info-right-side-inner .btn-transpatent:hover{ color: var(--ital-ink) !important; }
+#main .wr-preorder .btn-transpatent:hover .icon-load,
+#main .info-right-side-inner .btn-transpatent:hover span{ border-bottom-color: var(--ital-ink); }
+
+/* сноска под кнопками */
+#main .comment-detail-catalog{
+  margin-top: 16px;
+  padding-left: 12px;
+  border-left: 2px solid var(--ital-line);
+}
+#main .comment-detail-catalog span{
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ital-muted);
+}
+
+
+/* ==========================================================================
+   10. ХАРАКТЕРИСТИКИ
+   ========================================================================== */
+#chars .cart-char{ margin-top: 0; }
+#chars .cart-char-table-wrap{ padding: 0; }
+
+#chars table.cart-char-table{
+  width: 100% !important;
+  margin: 0 !important;
+  border: 0;
+  border-bottom: 1px solid var(--ital-line);
+  border-collapse: collapse;
+}
+#chars table.cart-char-table td{
+  padding: 11px 0 !important;
+  border: 0;
+  vertical-align: baseline;
+  font-size: 14.5px;
+  line-height: 1.5;
+  transition: background-color .15s var(--ital-ease);
+}
+#chars table.cart-char-table:hover td{ background-color: var(--ital-paper-2); }
+
+#chars table.cart-char-table td.left{
+  width: 48%;
+  padding-right: 10px !important;
+  color: var(--ital-muted);
+  font-size: 13.5px;
+}
+#chars table.cart-char-table td.dotted{
+  width: auto;
+  padding: 0 8px !important;
+}
+#chars table.cart-char-table td.dotted .dotted{
+  height: 0;
+  margin: 0;
+  border-bottom: 1px dotted var(--ital-line-2);
+  transform: translateY(-4px);
+}
+#chars table.cart-char-table td.right{
+  text-align: right;
+  font-weight: 600;
+  color: var(--ital-ink);
+}
+#chars table.cart-char-table .hint-prop{ color: var(--ital-line-2); margin-left: 5px; }
+
+/* «Показать все» */
+#chars .show-hidden-wrap{ margin-top: 16px; }
+#chars a.show-hidden{
+  display: inline-flex !important;
+  align-items: center;
+  gap: 9px;
+  width: auto !important;
+  padding: 0 !important;
+  background: none !important;
+  border: 0 !important;
+  color: var(--ital-ink) !important;
+  font: 500 13px/1 var(--ital-font) !important;
+  text-decoration: none !important;
+  cursor: pointer;
+}
+#chars a.show-hidden span{
+  border-bottom: 1px dashed var(--ital-line-2);
+  padding-bottom: 2px;
+  transition: border-color .18s var(--ital-ease);
+}
+#chars a.show-hidden:hover span{ border-bottom-color: var(--ital-ink); }
+#chars a.show-hidden::after{
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-right: 1px solid var(--ital-ink);
+  border-bottom: 1px solid var(--ital-ink);
+  transform: rotate(45deg) translateY(-2px);
+  transition: transform .2s var(--ital-ease);
+}
+#chars a.show-hidden.open::after{ transform: rotate(225deg) translateY(-2px); }
+
+/* --- файлы (инструкции, сертификаты) --- */
+#chars .cart-char-col-right .files-list{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#chars .files-list .item{ margin: 0; }
+#chars .files-list .item > a{
+  display: flex !important;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--ital-line);
+  border-radius: var(--ital-r);
+  background: var(--ital-paper);
+  text-decoration: none !important;
+  transition: border-color .18s var(--ital-ease), box-shadow .18s var(--ital-ease), transform .18s var(--ital-ease);
+}
+#chars .files-list .item > a:hover{
+  border-color: var(--ital-line-2);
+  box-shadow: var(--ital-shadow);
+  transform: translateY(-1px);
+}
+/* иконку документа рисуем сами, спрайт ФЕНИКС скрываем */
+#chars .files-list .wr-icon{
+  position: relative;
+  flex: 0 0 26px;
+  width: 26px;
+  height: 32px;
+  padding: 0 !important;
+}
+#chars .files-list .wr-icon .icon{ display: none !important; }
+#chars .files-list .wr-icon::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1.5px solid var(--ital-accent);
+  border-radius: 2px;
+  background: linear-gradient(135deg, var(--ital-paper) 0 60%, transparent 60%);
+}
+#chars .files-list .wr-icon::after{
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 10px;
+  height: 10px;
+  background: var(--ital-paper);
+  border-left: 1.5px solid var(--ital-accent);
+  border-bottom: 1.5px solid var(--ital-accent);
+}
+#chars .files-list .wr-desc .desc{
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ital-ink);
+  line-height: 1.35;
+}
+#chars .files-list .wr-desc .subdesc{
+  font-size: 12px;
+  color: var(--ital-muted);
+  margin-top: 2px;
+}
+
+
+/* ==========================================================================
+   11. ПОХОЖИЕ / СОПУТСТВУЮЩИЕ / ОБЗОРЫ
+   ========================================================================== */
+#similar .item-inner,
+#accessory .item-inner{
+  height: 100%;
+  padding: 14px;
+  border: 1px solid var(--ital-line);
+  border-radius: var(--ital-r);
+  background: var(--ital-paper);
+  transition: border-color .2s var(--ital-ease),
+              box-shadow .2s var(--ital-ease),
+              transform .2s var(--ital-ease);
+}
+#similar .item-inner:hover,
+#accessory .item-inner:hover{
+  border-color: var(--ital-line-2);
+  box-shadow: var(--ital-shadow);
+  transform: translateY(-2px);
+}
+#similar .name-element,
+#accessory .name-element{
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 58px;
+  font-size: 14px;
+  line-height: 1.4;
+  font-weight: 500;
+  color: var(--ital-ink);
+  text-decoration: none !important;
+}
+#similar .name-element:hover,
+#accessory .name-element:hover{ color: var(--ital-accent); }
+#similar .price-value,
+#accessory .price-value{
+  font-weight: 600 !important;
+  color: var(--ital-ink);
+  font-variant-numeric: tabular-nums;
+}
+#similar .unit,
+#accessory .unit{ color: var(--ital-muted); font-size: 12px; }
+#similar .old-price,
+#accessory .old-price{
+  color: var(--ital-muted);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+#similar .add2basket,
+#accessory .add2basket{
+  border-radius: var(--ital-r) !important;
+  font: 600 13px/1 var(--ital-font) !important;
+  transition: transform .18s var(--ital-ease), box-shadow .18s var(--ital-ease);
+}
+#similar .add2basket:hover,
+#accessory .add2basket:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -12px rgba(20,24,29,.6);
+}
+
+/* текстовые блоки карточки («Рекомендации по уходу», «Схема установки») */
+.cart-block .text-content{
+  font-family: var(--ital-font);
+  font-size: 15px;
+  line-height: 1.68;
+  color: var(--ital-ink-2);
+  max-width: 72ch;
+}
+.cart-block .text-content h2,
+.cart-block .text-content h3,
+.cart-block .text-content h4{
+  margin: 1.4em 0 .5em;
+  font-size: clamp(17px, 1.6vw, 20px);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  color: var(--ital-ink);
+}
+.cart-block .text-content ul{ margin: 0 0 1em; padding-left: 1.1em; }
+.cart-block .text-content li{ margin-bottom: .45em; }
+.cart-block .text-content img{
+  border: 1px solid var(--ital-line);
+  border-radius: var(--ital-r);
+  background: var(--ital-paper);
+}
+
+
+/* ==========================================================================
+   12. ПОЯВЛЕНИЕ БЛОКОВ (классы ставит product-card.js)
+   ========================================================================== */
+.ital-js #main .catalog-item,
+.ital-js #chars,
+.ital-js #similar,
+.ital-js #accessory,
+.ital-js #news_list{
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .55s var(--ital-ease), transform .55s var(--ital-ease);
+}
+.ital-js #main .catalog-item.ital-in,
+.ital-js #chars.ital-in,
+.ital-js #similar.ital-in,
+.ital-js #accessory.ital-in,
+.ital-js #news_list.ital-in{
+  opacity: 1;
+  transform: none;
+}
+
+
+/* ==========================================================================
+   13. АДАПТИВ
+   ========================================================================== */
+@media (max-width: 1199.98px){
+  #main .info-left-side{ padding-right: 12px; }
+  #main .info-right-side{ padding-left: 12px; }
+  #main .info-right-side .info-right-side-inner{ padding: 20px 20px 24px !important; }
+  #main .info-left-side .wrapper-big-picture{ min-height: 300px; }
+}
+
+/* планшет и мобильный: превью переносим под главное фото */
+@media (max-width: 767.98px){
+  #main .info-left-side,
+  #main .info-right-side{ padding-left: 0 !important; padding-right: 0 !important; }
+
+  #main .info-left-side .wrapper-picture{
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  #main .info-left-side .wrapper-controls{
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin-top: 10px;
+  }
+  #main .info-left-side .controls-pictures{
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  #main .info-left-side .small-picture{
+    width: 66px !important;
+    height: 66px !important;
+    flex: 0 0 66px;
+    aspect-ratio: auto;
+  }
+  #main .info-left-side .more{ width: auto; }
+  #main .info-left-side .outer-big-picture{
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  #main .info-left-side .wrapper-big-picture{ min-height: 260px; padding: 12px; }
+  #main .info-left-side .big-picture img{ max-height: 48vh; }
+
+  #main .info-right-side .info-right-side-inner{
+    margin-top: 4px;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 20px 0 0 !important;
+    box-shadow: none;
+  }
+  #main .price-value{ font-size: 30px !important; }
+  #main .quantity-container{ width: 140px; }
+  #main .total-container{ font-size: 12.5px; }
+  #main .wrapper-btns a{ min-height: 50px; }
+
+  #chars table.cart-char-table td.left{ width: 52%; }
+  #chars table.cart-char-table td.right{ font-size: 13.5px; }
+}
+
+@media (max-width: 575.98px){
+  #main .wrapper-btns{ margin-left: 0 !important; margin-right: 0 !important; }
+  #main .wrapper-btns > .left-btn,
+  #main .wrapper-btns > .right-btn{
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  #main .wrapper-btns > .right-btn{ margin-top: 10px; }
+  #main .wrapper-discount-cheaper{
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px;
+  }
+  #main .total-container{ text-align: left; padding-left: 12px; }
+}
+
+
+/* ==========================================================================
+   14. УВАЖЕНИЕ К НАСТРОЙКАМ ДОСТУПНОСТИ
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+  #main, #main *,
+  #chars, #chars *,
+  #similar, #similar *,
+  #accessory, #accessory *,
+  #news_list, #news_list *{
+    animation: none !important;
+    transition: none !important;
+  }
+  .ital-js #main .catalog-item,
+  .ital-js #chars,
+  .ital-js #similar,
+  .ital-js #accessory,
+  .ital-js #news_list{ opacity: 1 !important; transform: none !important; }
+}
