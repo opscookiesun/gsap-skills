@@ -1059,7 +1059,6 @@ body{ counter-reset: ital-sec; }
     border-radius: 0 !important;
     box-shadow: none !important;
     padding: 20px 0 0 !important;
-    box-shadow: none;
   }
   #main .price-value{ font-size: 30px !important; }
   #main .quantity-container{ width: 140px; }
